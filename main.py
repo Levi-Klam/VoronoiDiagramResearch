@@ -100,9 +100,7 @@ class VoronoiGenerator:
         for _ in self.coords.latlongs:
             self.colors.append((random.randint(0, 175), random.randint(0, 175), random.randint(0, 175)))
 
-        # Landmark Processing, currently a bit broken so unused
-        # self.landmarks = {}
-        # self.fixed_landmarks = []
+        # Landmarks were used for verification of longitudge/latitude points.
         self.landmarks = {'Pew Campus': [42.9645619511, -85.67985959953], 'Gerald R Ford Airport': [42.885762089162, -85.525930170048],
                           '196 meets 131': [42.973029244286, -85.678160370308], '131 meets 96': [43.01486632967, -85.677313444134],
                           '196 meets 96': [42.9767152583242, -85.604123679628], "M6 meets 196": [42.86220738433159, -85.8179164575949],
@@ -126,7 +124,7 @@ class VoronoiGenerator:
         duration = (end_time - start_time) * 1000
         print(f"Time for quad tree Voronoi: {duration} milliseconds with {self.n} seeds.")  # Change to just milliseconds, easier to pipe into file
 
-        # Save the distances from each point to the nearest seed in csv, this is only used to make the Pareto Front
+        # Save the distances from each point to the nearest seed in csv, this was only used to make the initial Pareto Front
         # np.savetxt(f"distance_arrays/{self.array_name}.csv", self.index_heat)
 
     def display_voronoi(self):
@@ -135,21 +133,12 @@ class VoronoiGenerator:
 
 
 def main():
-    hospital_coords = [[42.97064682743409, -85.66608871623687], [42.94424606653896, -85.55830002184193], [42.963471500540415, -85.66624111127469], [42.950680440861895, -85.5606616812743],
-                       [43.01559138589651, -85.71960201023141], [42.89066585258278, -85.76713512360661], [42.958811064761186, -85.66236868254477], [42.97070084999957, -85.66476558145712],
-                       [42.95378686333377, -85.62298869532792], [42.95367076159726, -85.6232751217235], [42.86027044244486, -85.71607368189366], [42.856100851064355, -85.76503446041109], [42.883621600674694, -85.62107965807779]]
-
-    debug1 = [[43.093464328125, -85.88757370214844]]
-    debug2 = [[43.079705800781255, -85.86921516210937], [42.777018199218745, -85.86921516210937]]
-    debug3 = [[43.079705800781255, -85.86921516210937], [42.777018199218745, -85.86921516210937], [42.777018199218745, -85.41074783789063]]
-
     # If the user chooses to do the weighted heatmap, there's no reason to generate a single voronoi, so it goes to an entirely different program
     start_menu = DisplayMenu()
     if start_menu.heat_map_check == 2:
         pareto = Pareto(start_menu.heat_weights)
         display = VoronoiWeightedDisplay(start_menu.size, pareto.final, start_menu.heat_multiplier)
         display.display_voronoi()
-    # Otherwise,
     else:
         chosen_array = ArrayBuilder.choose(start_menu.voronoi_selection)
         generator = VoronoiGenerator(start_menu.size, start_menu.voronoi_selection, chosen_array, start_menu.heat_map_check, start_menu.heat_multiplier, start_menu.heat_weights) # Array name, array literal, heatmap 0-2
